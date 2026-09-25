@@ -14,8 +14,6 @@ workbook and weather loading, exploration, features, model comparison and the fi
 
 **22 drivers · 166 training races · 84 validation races**
 
-The forecast is frozen at **25 September 2026, 14:43 UTC**. The starting grid is provisional.
-
 ## The prediction
 
 <img src="assets/forecast.png" alt="Baku finishing-order prediction and uncertainty intervals" width="900">
