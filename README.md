@@ -88,25 +88,3 @@ and reserve-driver appearances are not filled with another driver's laps.
 The workbook supplies the current weekend; the grid CSV applies documented penalties.
 The saved run includes 187 historical races. The 2018 season initializes rolling features
 and is excluded from model training. Later API amendments may change a future rerun.
-
-Weather is loaded directly from the JSON, checked against the information cutoff and
-summarized over the race window. It remains context rather than a model input because
-comparable historical pre-race forecasts are unavailable. Downloads may be reused in a
-temporary system folder; no cache files or cache archive are included in this repository.
-Fresh exports go to `results/` when the notebook runs.
-
-The corrected FP2 filter finds **222 clean timing laps across all 22 drivers**, but no
-five-lap runs passing the pace and continuity checks. Slow laps are filtered against
-the fastest clean lap in each driver/stint/compound, then consecutive blocks are rebuilt.
-Long-run pace, slope and lap count are excluded together. The notebook shows per-driver
-coverage and reruns all 84 validation races; previously inspected periods remain
-retrospective checks.
-
-Probabilities are approximate historical-error simulations. Strategy, incidents and later
-grid changes remain unknown. Historical weather only informs later races; a current-weather
-model was not supported by comparable pre-race forecast data.
-
-Historical data: [FastF1](https://docs.fastf1.dev/). Grid sources are retained in
-[`grid.csv`](data/grid.csv), and weather provenance in
-[`weather_snapshot.json`](data/weather_snapshot.json). Executed locally with Python 3.10;
-hosted Colab has not been directly verified.
