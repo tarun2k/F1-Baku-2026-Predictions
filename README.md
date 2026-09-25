@@ -27,27 +27,40 @@ Norris stays P5. The intervals are deliberately broad.
 
 Average finishing-position error; lower is better.
 
-| Period | XGBoost + FP2 | Starting-grid baseline |
-|---|---:|---:|
-| 2023–2024 | 3.085 | 3.306 |
-| 2025 | 3.303 | 3.344 |
-| 2026 before Baku | 3.429 | 3.403 |
+| Model | 2023–2024 selection | 2025 | 2026 before Baku |
+|---|---:|---:|---:|
+| **Core ranker — selected** | **3.096** | 3.278 | 3.481 |
+| Core + FP1 | 3.105 | 3.253 | 3.481 |
+| Core + FP2 | 3.100 | 3.266 | 3.448 |
+| Core + FP3 | 3.107 | 3.282 | 3.487 |
+| Core + FP1, FP2 and FP3 | 3.101 | 3.257 | 3.422 |
+| Starting grid | 3.306 | 3.344 | 3.403 |
 
-Every validation race uses earlier training races only. The model improves on the grid
-in development, but does not beat it consistently in later periods.
+Every validation race uses earlier training races only. The core ranker narrowly wins
+selection on 2023–2024, so the Baku forecast stays unchanged. Combined practice improves
+the later point estimates, but its paired 95% intervals versus the core model include
+zero in every period. These retrospective results do not establish a reliable gain.
+The selected model still trails the grid baseline in 2026.
 
 ## Experiments I tried
 
-These earlier experiments are summarized here; the notebook runs the main modeling workflow.
+The notebook now compares FP1, FP2 and FP3 individually and together, using the same
+ranker settings and chronological races. Each session contributes fastest-lap gap,
+team-average gap and recorded lap count. Paired race-block intervals show how uncertain
+the improvement over the core model is.
+
+The earlier experiments below used the previous FP2 pipeline and have not been rerun
+after the filtering corrections.
 
 | Experiment | Result |
 |---|---|
 | Expected qualifying versus the actual grid | Flagged displaced drivers, but did not reliably improve race predictions. |
 | More weight on recent races | Neither a 20-race half-life nor a 60-race window earned a change. |
-| Twice the weight for the same circuit | Negligible earlier gains; 2026 MAE worsened from 3.429 to 3.506. |
+| Twice the weight for the same circuit | Small earlier gains did not hold up in 2026. |
 
-I kept the original model. These were retrospective comparisons using already examined
-seasons; the qualifying experiment used a smaller matched set of races.
+None justified promoting an experimental variant. These were retrospective comparisons
+using already examined seasons; the qualifying experiment used a smaller matched set
+of races. The current notebook reruns model selection with all three practice sessions.
 
 ## Run it
 
@@ -56,7 +69,8 @@ The notebook already contains its tables and plots. To rerun locally, install
 
 In Colab, upload the notebook, then the workbook, grid CSV and weather JSON when prompted.
 If setup installs packages, restart the kernel once and run all cells again. The first
-FastF1 download can take a while.
+FastF1 download can take a while. If a download limit interrupts extraction, wait for
+the limit to reset and rerun; completed downloads are reused from the temporary folder.
 
 ```text
 baku_2026.ipynb              Extraction through prediction
@@ -67,7 +81,10 @@ data/weather_snapshot.json  Timestamped pre-race weather
 assets/                     README graphics
 ```
 
-FastF1 loads historical results and qualifying, FP2 laps, and previous-race pace/weather.
+FastF1 loads historical results and qualifying, FP1/FP2/FP3 laps from 2023 onward,
+and previous-race pace/weather. Race-control messages identify deleted practice laps.
+FP1 is available for 84 evaluation races; FP2 and FP3 for 61 each. Missing sessions
+and reserve-driver appearances are not filled with another driver's laps.
 The workbook supplies the current weekend; the grid CSV applies documented penalties.
 The saved run includes 187 historical races. The 2018 season initializes rolling features
 and is excluded from model training. Later API amendments may change a future rerun.
@@ -77,6 +94,13 @@ summarized over the race window. It remains context rather than a model input be
 comparable historical pre-race forecasts are unavailable. Downloads may be reused in a
 temporary system folder; no cache files or cache archive are included in this repository.
 Fresh exports go to `results/` when the notebook runs.
+
+The corrected FP2 filter finds **222 clean timing laps across all 22 drivers**, but no
+five-lap runs passing the pace and continuity checks. Slow laps are filtered against
+the fastest clean lap in each driver/stint/compound, then consecutive blocks are rebuilt.
+Long-run pace, slope and lap count are excluded together. The notebook shows per-driver
+coverage and reruns all 84 validation races; previously inspected periods remain
+retrospective checks.
 
 Probabilities are approximate historical-error simulations. Strategy, incidents and later
 grid changes remain unknown. Historical weather only informs later races; a current-weather
